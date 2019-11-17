@@ -35,30 +35,69 @@ typedef enum {
 event_type_t event_t;
 static QueueHandle_t event_queue;
 
-static void _sntp_on_connected(void)
-{
-    event_t = EVENT_TYPE_SNTP_CONNECTED;
-
-    ESP_LOGD(TAG, "Queuing event EVENT_TYPE_SNTP_CONNECTED");
-    xQueueSend(event_queue, &event_t, portMAX_DELAY);
-    ESP_LOGI(TAG," SNTP CONNECTED");
-}
-
-
 /* Variable holding number of times ESP32 restarted since first boot.
  * It is placed into RTC memory using RTC_DATA_ATTR and
  * maintains its value when ESP32 wakes from deep sleep.
  */
 RTC_DATA_ATTR static int boot_count = 0;
 
+static void _sntp_on_connected(void)
+{
+    event_t = EVENT_TYPE_SNTP_CONNECTED;
+
+    ESP_LOGD(TAG, "Queuing event EVENT_TYPE_SNTP_CONNECTED");
+    xQueueSend(event_queue, &event_t, portMAX_DELAY);
+    
+}
+
+
+static void ble2mqtt_handle_event()
+{
+    switch (event_t)
+    {
+    case EVENT_TYPE_SNTP_CONNECTED:
+        ESP_LOGI(TAG,"SNTP CONNECTED");
+        // uptime_publish();
+        break;
+    case EVENT_TYPE_SNTP_DISCONNECTED:
+        // ota_on_completed(event->ota_completed.type, event->ota_completed.err);
+        break;
+
+
+    free(event);
+}
+
+static void ble2mqtt_task(void *pvParameter)
+{
+
+    while (1)
+    {
+        if (xQueueReceive(event_queue, &event_t, portMAX_DELAY) != pdTRUE)
+            continue;
+
+        ble2mqtt_handle_event(event_t);
+    }
+
+    vTaskDelete(NULL);
+}
+
+static int start_ble2mqtt_task(void)
+{
+    if (!(event_queue = xQueueCreate(10, sizeof(event_t))))
+        return -1;
+
+    if (xTaskCreatePinnedToCore(ble2mqtt_task, "ble2mqtt_task", 4096, NULL, 5,
+        NULL, 1) != pdPASS)
+    {
+        return -1;
+    }
+    ESP_LOGI(TAG,"xTaskCreatePinnedToCore");
+}
 
 void app_main()
 {
     struct tm timeinfo;
     char strftime_buf[64];
-
-    event_queue = xQueueCreate(10, sizeof(event_t));
-    
     
     /* all template trash */
     ESP_ERROR_CHECK( nvs_flash_init() );
