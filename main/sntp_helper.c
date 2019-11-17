@@ -129,8 +129,7 @@ esp_err_t sntp_get_tz_timeinfo(const char* tz, struct tm *timeinfo)
  *
  * @return
  *  - ESP_OK: Success
- *  - ESP_ERR_NO_MEM: Cannot allocate memory for event loops list
- *  - ESP_FAIL: Failed to create task loop
+ *  - ESP_FAIL: Failed
  *  - Others: Fail
  */
 esp_err_t sntp_helper_init(void)
