@@ -75,7 +75,7 @@ void app_main()
      * a connection check to ensure status
      * is OK.
      */
-    ESP_ERROR_CHECK(sntp_helper_init()); 
+    ESP_ERROR_CHECK(sntp_helper_init("pool.ntp.org")); 
 
     while(1)
     {  
