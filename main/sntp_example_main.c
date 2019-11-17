@@ -40,7 +40,7 @@ static void _sntp_on_connected(void)
 
     // ESP_LOGD(TAG, "Queuing event WIFI_CONNECTED");
     // xQueueSend(event_queue, &event, portMAX_DELAY);
-    ESP_LOGI(TAG," SNTP CONNECTED");
+    ESP_LOGI(TAG,"SNTP CONNECTED");
 }
 
 
