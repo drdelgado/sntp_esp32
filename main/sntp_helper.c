@@ -133,14 +133,13 @@ esp_err_t sntp_get_tz_timeinfo(const char* tz, struct tm *timeinfo)
  *  - ESP_FAIL: Failed to create task loop
  *  - Others: Fail
  */
-esp_err_t sntp_helper_init(void)
+esp_err_t sntp_helper_init(const char* sntp_pool_uri)
 {
     int retry = 0;
-    ESP_LOGI(TAG, "Initializing SNTP");
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
-    sntp_setservername(0, "pool.ntp.org");
-    sntp_set_time_sync_notification_cb(_time_sync_notification_cb);
-    sntp_init();
+    sntp_setservername(0, sntp_pool_uri); // connect to ntp server pool via URI
+    sntp_set_time_sync_notification_cb(_time_sync_notification_cb); // set the cb function linked in main
+    sntp_init(); //Initialize this sntp module.
 
     while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < RETRY_ATTEMPTS) 
     {
@@ -152,5 +151,5 @@ esp_err_t sntp_helper_init(void)
         }
     }
     
-    return ESP_OK;
+    return ESP_OK; // connection success
 }
