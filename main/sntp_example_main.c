@@ -32,14 +32,15 @@ typedef enum {
     EVENT_TYPE_SNTP_DISCONNECTED,
 } event_type_t;
 
+event_type_t event_t;
+static QueueHandle_t event_queue;
+
 static void _sntp_on_connected(void)
 {
-    // event_t *event = malloc(sizeof(*event));
+    event_t = EVENT_TYPE_SNTP_CONNECTED;
 
-    // event->type = EVENT_TYPE_SNTP_CONNECTED;
-
-    // ESP_LOGD(TAG, "Queuing event WIFI_CONNECTED");
-    // xQueueSend(event_queue, &event, portMAX_DELAY);
+    ESP_LOGD(TAG, "Queuing event EVENT_TYPE_SNTP_CONNECTED");
+    xQueueSend(event_queue, &event_t, portMAX_DELAY);
     ESP_LOGI(TAG," SNTP CONNECTED");
 }
 
@@ -56,6 +57,9 @@ void app_main()
     struct tm timeinfo;
     char strftime_buf[64];
 
+    event_queue = xQueueCreate(10, sizeof(event_t));
+    
+    
     /* all template trash */
     ESP_ERROR_CHECK( nvs_flash_init() );
     tcpip_adapter_init();
