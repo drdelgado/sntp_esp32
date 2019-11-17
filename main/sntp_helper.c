@@ -66,7 +66,7 @@ uint64_t sntp_get_sec_since_epoch(void)
 
     secondsSinceEpoch = (uint64_t)(tv.tv_sec); 
 
-    printf("%llu\n", secondsSinceEpoch); // TODO: debug delete
+    // printf("%llu\n", secondsSinceEpoch); // TODO: debug delete
     return secondsSinceEpoch;
 }
 
@@ -94,7 +94,7 @@ uint64_t sntp_get_ms_since_epoch(void)
             (uint64_t)(tv.tv_sec) * 1000 +
             (uint64_t)(tv.tv_usec) / 1000;
 
-    printf("%llu\n", millisecondsSinceEpoch); // TODO: debug delete
+    // printf("%llu\n", millisecondsSinceEpoch); // TODO: debug delete
     return millisecondsSinceEpoch;
 }
 
